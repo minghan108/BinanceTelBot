@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class SimpleNotificationListener extends NotificationListenerService {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-
+    public TradeManager tradeManager = new TradeManager();
     public String TAG = "SimpleNotificationListener";
     public enum BaseDropPercentage{
         NO_DROP,
@@ -78,6 +78,8 @@ public class SimpleNotificationListener extends NotificationListenerService {
             baseDropPercentage = BaseDropPercentage.DROP_TEN_PERCENT;
             Log.i("baseDropPercentage","BaseDropPercentage.DROP_TEN_PERCENT");
             symbolKey = "Hodloo Binance 10%";
+        } else {
+            baseDropPercentage = BaseDropPercentage.NO_DROP;
         }
 
         //String pattern = ".*" + symbolKey + "=(.*?)(?:\\s*\\S+:.*|$)";
@@ -89,7 +91,8 @@ public class SimpleNotificationListener extends NotificationListenerService {
         Matcher symbolMatcher = symbolPattern.matcher(ticker);
         if (symbolMatcher.find()) {
             symbol = symbolMatcher.group(2);
-            symbol.replaceAll("\\s+","");
+            symbol = symbol.replaceAll("\\s+","");
+            symbol = symbol.replaceAll("/\\z", "");
             Log.i("Regex Symbol", symbol);
         } else {
             Log.i("Regex Symbol", "No Match");
@@ -106,18 +109,22 @@ public class SimpleNotificationListener extends NotificationListenerService {
             Log.i("Regex Base", "No Match");
         }
 
-        Intent msgrcv = new Intent("Msg");
-        msgrcv.putExtra("package", pack);
-        msgrcv.putExtra("ticker", ticker);
-        msgrcv.putExtra("title", title);
-        msgrcv.putExtra("text", text);
-        if(id != null) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            //id.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
-            msgrcv.putExtra("icon",byteArray);
+        if (baseDropPercentage != BaseDropPercentage.NO_DROP){
+
         }
-        LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);
+
+//        Intent msgrcv = new Intent("Msg");
+//        msgrcv.putExtra("package", pack);
+//        msgrcv.putExtra("ticker", ticker);
+//        msgrcv.putExtra("title", title);
+//        msgrcv.putExtra("text", text);
+//        if(id != null) {
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            //id.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//            byte[] byteArray = stream.toByteArray();
+//            msgrcv.putExtra("icon",byteArray);
+//        }
+//        LocalBroadcastManager.getInstance(context).sendBroadcast(msgrcv);
     }
 
     @Override
