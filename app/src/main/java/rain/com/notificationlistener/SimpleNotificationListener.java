@@ -14,6 +14,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by MSI\mliu on 29/05/18.
@@ -24,7 +26,11 @@ public class SimpleNotificationListener extends NotificationListenerService {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 
     public String TAG = "SimpleNotificationListener";
-
+    public enum BaseDropPercentage{
+        NO_DROP,
+        DROP_FIVE_PERCENT,
+        DROP_TEN_PERCENT
+    }
     Context context;
 
     @Override
@@ -40,6 +46,10 @@ public class SimpleNotificationListener extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        BaseDropPercentage baseDropPercentage;
+        String symbolKey = "";
+        String symbol = "";
+        double base;
         Log.d(TAG, "onNotificationPosted");
         String pack = sbn.getPackageName();
         String ticker ="";
@@ -48,7 +58,9 @@ public class SimpleNotificationListener extends NotificationListenerService {
         }
         Bundle extras = sbn.getNotification().extras;
         String title = extras.getString("android.title");
-        String text = extras.getCharSequence("android.text").toString();
+        String text = "";
+        if (extras.getCharSequence("android.text") != null)
+            text = extras.getCharSequence("android.text").toString();
         int id1 = extras.getInt(Notification.EXTRA_SMALL_ICON);
         Bitmap id = sbn.getNotification().largeIcon;
 
@@ -57,6 +69,42 @@ public class SimpleNotificationListener extends NotificationListenerService {
         Log.i("Ticker",ticker);
         Log.i("Title",title);
         Log.i("Text",text);
+
+        if (ticker.contains("Hodloo Binance 5%")){
+            baseDropPercentage = BaseDropPercentage.DROP_FIVE_PERCENT;
+            Log.i("baseDropPercentage","BaseDropPercentage.DROP_FIVE_PERCENT");
+            symbolKey = "Hodloo Binance 5%";
+        } else if (ticker.contains("Hodloo Binance 10%")){
+            baseDropPercentage = BaseDropPercentage.DROP_TEN_PERCENT;
+            Log.i("baseDropPercentage","BaseDropPercentage.DROP_TEN_PERCENT");
+            symbolKey = "Hodloo Binance 10%";
+        }
+
+        //String pattern = ".*" + symbolKey + "=(.*?)(?:\\s*\\S+:.*|$)";
+        //String pattern = ".*5=(.*?)(?:\\s*\\S+:.*|$)";
+        //String pattern = "(?<=Hodloo Binance 5%).*";
+        //String pattern = "(\\w*):(\"[^\"]*\"|[^\\s]*)";
+        String symbolPatternStr = "(" + symbolKey + "):\\s*(\\S+)";
+        Pattern symbolPattern = Pattern.compile(symbolPatternStr);
+        Matcher symbolMatcher = symbolPattern.matcher(ticker);
+        if (symbolMatcher.find()) {
+            symbol = symbolMatcher.group(2);
+            symbol.replaceAll("\\s+","");
+            Log.i("Regex Symbol", symbol);
+        } else {
+            Log.i("Regex Symbol", "No Match");
+        }
+
+        String basePatternStr = "(Base):\\s*(\\S+)";
+        Pattern basePattern = Pattern.compile(basePatternStr);
+        Matcher baseMatcher = basePattern.matcher(ticker);
+        if (baseMatcher.find()) {
+            base = Double.parseDouble(baseMatcher.group(2).replaceAll("\\s+",""));
+            //symbol.replaceAll("\\s+","");
+            Log.i("Regex Base", String.valueOf(base));
+        } else {
+            Log.i("Regex Base", "No Match");
+        }
 
         Intent msgrcv = new Intent("Msg");
         msgrcv.putExtra("package", pack);
