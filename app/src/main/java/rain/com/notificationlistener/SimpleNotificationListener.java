@@ -110,7 +110,17 @@ public class SimpleNotificationListener extends NotificationListenerService {
         }
 
         if (baseDropPercentage != BaseDropPercentage.NO_DROP){
+            tradeManager.sendServerTimeRequest(new TradeListener() {
+                @Override
+                public void onSuccess(Double response) {
 
+                }
+
+                @Override
+                public void onFailure(String failureMsg) {
+
+                }
+            });
         }
 
 //        Intent msgrcv = new Intent("Msg");

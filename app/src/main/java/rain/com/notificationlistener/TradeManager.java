@@ -15,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class TradeManager {
     String TAG = "TradeManager";
+    JsonParser jsonParser = new JsonParser();
 
     public synchronized void sendTradeRequest(final TradeListener tradeListener){
         SafeThread sendAddBookingRequestThread = new SafeThread("sendAddBookingRequestThread") {
@@ -38,13 +39,12 @@ public class TradeManager {
                         sem.sem_post();
                     }
                 };
-                (new OkHttpConnection()).getResponse(getTradeUrl(), httpListener, getTradeHttpXmlBody());
+                (new OkHttpConnection()).getResponse(getTradeUrl(), httpListener, getTradeHttpXmlBody(), "POST");
                 sem.sem_wait();
             }
         };
 
         sendAddBookingRequestThread.start();
-
 
     }
 
@@ -70,14 +70,52 @@ public class TradeManager {
                         sem.sem_post();
                     }
                 };
-                (new OkHttpConnection()).getResponse(getAccountInfoUrl(), httpListener, getTradeHttpXmlBody(), "GET");
+                (new OkHttpConnection()).getResponse(getAccountInfoUrl("","",""), httpListener, getTradeHttpXmlBody(), "GET");
                 sem.sem_wait();
             }
         };
 
         sendAddBookingRequestThread.start();
 
+    }
 
+    public synchronized void sendServerTimeRequest(final TradeListener tradeListener){
+        SafeThread sendAddBookingRequestThread = new SafeThread("sendAddBookingRequestThread") {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            protected void runSafe() {
+                TradeListener listener = tradeListener;
+                final Semaphore sem = new Semaphore();
+                sem.sem_open();
+                OnOkhttpProcessFinish httpListener = new OnOkhttpProcessFinish() {
+                    @Override
+                    public void onHttpEvent(String response) {
+                        handleServerTimeResponseFromServer(response, tradeListener);
+                        sem.sem_post();
+                    }
+
+                    @Override
+                    public void onHttpFailure(String response) {
+                        Log.d(TAG, "sendAddBookingRequest onFailure");
+                        handleOnFailure(response, tradeListener);
+                        sem.sem_post();
+                    }
+                };
+                (new OkHttpConnection()).getResponse(getServerTimeUrl(), httpListener, getTradeHttpXmlBody(), "GET");
+                sem.sem_wait();
+            }
+        };
+
+        sendAddBookingRequestThread.start();
+
+    }
+
+    private void handleServerTimeResponseFromServer(String response, TradeListener tradeListener) {
+        jsonParser.parseServerTimeResponse(response, tradeListener);
+    }
+
+    private String getServerTimeUrl() {
+        return "https://api.binance.com/api/v1/time";
     }
 
     public static String encode(String secretKey, String queryString) throws Exception {

@@ -5,7 +5,7 @@ package rain.com.notificationlistener;
  */
 
 public interface TradeListener {
-    void onSuccess();
+    void onSuccess(Double response);
 
-    void onFailure();
+    void onFailure(String failureMsg);
 }

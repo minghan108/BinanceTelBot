@@ -11,6 +11,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import info.guardianproject.netcipher.NetCipher;
+
 /**
  * Created by MSI\mliu on 30/05/18.
  */
@@ -34,10 +38,13 @@ public class OkHttpConnection {
         Log.d(TAG, " Command sent to dongle:" + Url);
 
         URL url = null;
-        HttpURLConnection urlConnection = null;
+        //HttpsURLConnection.setDefaultSSLSocketFactory(new NoSSLv3Factory());
+        HttpsURLConnection urlConnection = null;
+
         try {
             url = new URL(Url);
-            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection = (HttpsURLConnection) url.openConnection();
+            //urlConnection = NetCipher.getHttpsURLConnection(url);
             urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             urlConnection.setRequestProperty("Accept", "application/json");
             urlConnection.setDefaultUseCaches(false);
@@ -48,12 +55,13 @@ public class OkHttpConnection {
             urlConnection.setInstanceFollowRedirects(false);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setReadTimeout(15000);
+            urlConnection.setDefaultSSLSocketFactory(new NoSSLv3Factory());
             OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
             //output.write(httpBody.getBytes());
             output.flush();
             int responseCode = urlConnection.getResponseCode();
 
-            if(responseCode == HttpURLConnection.HTTP_OK){
+            if(responseCode == HttpsURLConnection.HTTP_OK){
                 Log.d(TAG, "getResponse onSuccess: " + responseCode);
                 responseData = readStream(urlConnection.getInputStream());
                 onResponse(responseData);

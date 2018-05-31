@@ -27,5 +27,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'commons-codec:commons-codec:1.9'
+    compile 'info.guardianproject.netcipher:netcipher:1.2'
     testCompile 'junit:junit:4.12'
 }
