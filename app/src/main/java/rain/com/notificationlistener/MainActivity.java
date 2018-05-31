@@ -30,21 +30,8 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction("rain.com.notificationlistener");
         registerReceiver(nReceiver,filter);
 
-//        try {
-//            Log.i(TAG, encode(key, queryString));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 //        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 //        startActivity(intent);
-    }
-
-    public static String encode(String key, String data) throws Exception {
-        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secret_key = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA256");
-        sha256_HMAC.init(secret_key);
-
-        return new String(Hex.encodeHex(sha256_HMAC.doFinal(data.getBytes("UTF-8"))));
     }
 
     class NotificationReceiver extends BroadcastReceiver {

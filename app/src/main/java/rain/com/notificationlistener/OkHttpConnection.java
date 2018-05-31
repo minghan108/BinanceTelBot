@@ -24,7 +24,7 @@ public class OkHttpConnection {
 
 
 
-    public void getResponse(final String Url, OnOkhttpProcessFinish onOkhttpProcessFinishListener, String httpHeader){
+    public void getResponse(final String Url, OnOkhttpProcessFinish onOkhttpProcessFinishListener, String httpBody, String restCmd){
         try {
             httpRequestThreadSemaphore.acquire();
         } catch (InterruptedException e) {
@@ -38,18 +38,18 @@ public class OkHttpConnection {
         try {
             url = new URL(Url);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Content-Type", "application/xml; charset=UTF-8");
-            urlConnection.setRequestProperty("Accept", "application/xml");
+            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            urlConnection.setRequestProperty("Accept", "application/json");
             urlConnection.setDefaultUseCaches(false);
             urlConnection.setUseCaches(false);
-            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestMethod(restCmd);
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
             urlConnection.setInstanceFollowRedirects(false);
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setReadTimeout(15000);
             OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
-            output.write(httpHeader.getBytes());
+            //output.write(httpBody.getBytes());
             output.flush();
             int responseCode = urlConnection.getResponseCode();
 
