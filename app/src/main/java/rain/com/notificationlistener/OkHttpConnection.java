@@ -37,39 +37,61 @@ public class OkHttpConnection {
         mListener = onOkhttpProcessFinishListener;
         Log.d(TAG, " Command sent to dongle:" + Url);
 
-        URL url = null;
-        //HttpsURLConnection.setDefaultSSLSocketFactory(new NoSSLv3Factory());
-        HttpsURLConnection urlConnection = null;
+//        URL url = null;
+//        //HttpsURLConnection.setDefaultSSLSocketFactory(new NoSSLv3Factory());
+//        HttpsURLConnection urlConnection = null;
 
+//        URL url = null;
+//        HttpURLConnection urlConnection = null;
+//        try {
+//            url = new URL(Url);
+//            urlConnection = (HttpURLConnection) url.openConnection();
+//            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+//            urlConnection.setRequestProperty("Accept", "application/json");
+//            urlConnection.setDefaultUseCaches(false);
+//            urlConnection.setUseCaches(false);
+//            urlConnection.setRequestMethod(restCmd);
+//            urlConnection.setDoInput(true);
+//            urlConnection.setDoOutput(true);
+//            urlConnection.setInstanceFollowRedirects(false);
+//            urlConnection.setConnectTimeout(5000);
+//            urlConnection.setReadTimeout(5000);
+//            OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
+//            //output.write(httpHeader.getBytes());
+//            output.flush();
+//            int responseCode = urlConnection.getResponseCode();
+//
+//            if(responseCode == HttpURLConnection.HTTP_OK){
+//                Log.d(TAG, "getResponse onSuccess: " + responseCode);
+//                responseData = readStream(urlConnection.getInputStream());
+//                onResponse(responseData);
+//            } else {
+//                Log.d(TAG, "getResponse onFailure: " + responseCode);
+//                onFailure(responseCode);
+//            }
+
+        URL url = null;
+        HttpURLConnection urlConnection = null;
         try {
             url = new URL(Url);
-            urlConnection = (HttpsURLConnection) url.openConnection();
-            //urlConnection = NetCipher.getHttpsURLConnection(url);
-            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDefaultUseCaches(false);
             urlConnection.setUseCaches(false);
-            urlConnection.setRequestMethod(restCmd);
-            urlConnection.setDoInput(true);
-            urlConnection.setDoOutput(true);
-            urlConnection.setInstanceFollowRedirects(false);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setReadTimeout(15000);
-            urlConnection.setDefaultSSLSocketFactory(new NoSSLv3Factory());
-            OutputStream output = new BufferedOutputStream(urlConnection.getOutputStream());
-            //output.write(httpBody.getBytes());
-            output.flush();
             int responseCode = urlConnection.getResponseCode();
-
-            if(responseCode == HttpsURLConnection.HTTP_OK){
-                Log.d(TAG, "getResponse onSuccess: " + responseCode);
+            if(responseCode == HttpURLConnection.HTTP_OK){
                 responseData = readStream(urlConnection.getInputStream());
+//                try {
+//                    getLogger().info(TAG + "get http response" + responseData);
+//                } catch(Exception e) {
+//                    getLogger().info(TAG + "output response due to the format issue");
+//                }
                 onResponse(responseData);
             } else {
-                Log.d(TAG, "getResponse onFailure: " + responseCode);
+                Log.d(TAG, "getResponse onFailure: ");
                 onFailure(responseCode);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
             Log.d(TAG, "getResponse onFailure IOException: ");

@@ -9,23 +9,19 @@ import org.json.JSONObject;
 public class JsonParser {
     String TAG = "JsonParser";
 
-    public void parseServerTimeResponse(String response, TradeListener tradeListener) {
+    public void parseServerTimeResponse(String response, ServerTimeListener serverTimeListener) {
         Log.d(TAG, "SeverTimeResponse: " + response);
+        Long serverTime = 0L;
 
         try {
             JSONObject obj = new JSONObject(response);
-
-            JSONArray jsonArray = obj.getJSONArray("serverTime");
-            Log.d(TAG, "jsonArray length: " + jsonArray.length());
-            Log.d(TAG, "serverTime JsonArray: " + jsonArray.get(0));
-            jsonArray = (JSONArray)jsonArray.get(0);
-            Log.d(TAG, "serverTime: " + jsonArray.get(0));
-            Double askPriceDouble = Double.parseDouble(jsonArray.get(0).toString());
-            tradeListener.onSuccess(askPriceDouble);
+            serverTime = obj.getLong("serverTime");
+            Log.d(TAG, "serverTime: " + serverTime);
+            serverTimeListener.onSuccess(serverTime);
 
 
         } catch (JSONException e) {
-            tradeListener.onFailure("Failure when parsing SendBuyResponse");
+            serverTimeListener.onFailure("Failure when parsing SendBuyResponse");
             e.printStackTrace();
         }
     }

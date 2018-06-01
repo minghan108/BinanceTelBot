@@ -9,10 +9,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.security.ProviderInstaller;
+
 import org.apache.commons.codec.binary.Hex;
+
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.SSLContext;
 
 public class MainActivity extends AppCompatActivity {
     private TextView txtView;
@@ -29,9 +36,24 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction("rain.com.notificationlistener");
         registerReceiver(nReceiver,filter);
-
+        initializeSSLContext(getApplicationContext());
 //        Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 //        startActivity(intent);
+    }
+
+    public static void initializeSSLContext(Context mContext){
+        try {
+            SSLContext.getInstance("TLSv1.2");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        try {
+            ProviderInstaller.installIfNeeded(mContext.getApplicationContext());
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
     }
 
     class NotificationReceiver extends BroadcastReceiver {

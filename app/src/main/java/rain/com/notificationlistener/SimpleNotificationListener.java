@@ -44,6 +44,7 @@ public class SimpleNotificationListener extends NotificationListenerService {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         BaseDropPercentage baseDropPercentage;
@@ -110,9 +111,9 @@ public class SimpleNotificationListener extends NotificationListenerService {
         }
 
         if (baseDropPercentage != BaseDropPercentage.NO_DROP){
-            tradeManager.sendServerTimeRequest(new TradeListener() {
+            tradeManager.sendServerTimeRequest(new ServerTimeListener() {
                 @Override
-                public void onSuccess(Double response) {
+                public void onSuccess(Long response) {
 
                 }
 

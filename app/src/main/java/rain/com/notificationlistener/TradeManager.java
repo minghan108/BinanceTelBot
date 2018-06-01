@@ -79,25 +79,25 @@ public class TradeManager {
 
     }
 
-    public synchronized void sendServerTimeRequest(final TradeListener tradeListener){
+    public synchronized void sendServerTimeRequest(final ServerTimeListener serverTimeListener){
         SafeThread sendAddBookingRequestThread = new SafeThread("sendAddBookingRequestThread") {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             protected void runSafe() {
-                TradeListener listener = tradeListener;
+                ServerTimeListener listener = serverTimeListener;
                 final Semaphore sem = new Semaphore();
                 sem.sem_open();
                 OnOkhttpProcessFinish httpListener = new OnOkhttpProcessFinish() {
                     @Override
                     public void onHttpEvent(String response) {
-                        handleServerTimeResponseFromServer(response, tradeListener);
+                        handleServerTimeResponseFromServer(response, serverTimeListener);
                         sem.sem_post();
                     }
 
                     @Override
                     public void onHttpFailure(String response) {
                         Log.d(TAG, "sendAddBookingRequest onFailure");
-                        handleOnFailure(response, tradeListener);
+                        handleOnFailure(response, serverTimeListener);
                         sem.sem_post();
                     }
                 };
@@ -110,8 +110,8 @@ public class TradeManager {
 
     }
 
-    private void handleServerTimeResponseFromServer(String response, TradeListener tradeListener) {
-        jsonParser.parseServerTimeResponse(response, tradeListener);
+    private void handleServerTimeResponseFromServer(String response, ServerTimeListener serverTimeListener) {
+        jsonParser.parseServerTimeResponse(response, serverTimeListener);
     }
 
     private String getServerTimeUrl() {
@@ -146,6 +146,9 @@ public class TradeManager {
     }
 
     private void handleTradeResponseFromServer(String response, TradeListener tradeListener) {
+    }
+
+    private void handleOnFailure(String response, ServerTimeListener serverTimeListener) {
     }
 
     private void handleOnFailure(String response, TradeListener tradeListener) {
